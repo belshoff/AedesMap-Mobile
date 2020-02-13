@@ -1,4 +1,4 @@
-# aedes_map_flutter
+# Aedes Map Mobile App
 
 A new Flutter project.
 
