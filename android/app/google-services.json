@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "394866850552",
+    "firebase_url": "https://aedesmap-51573.firebaseio.com",
+    "project_id": "aedesmap-51573",
+    "storage_bucket": "aedesmap-51573.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:394866850552:android:04926f2c34395b343c990d",
+        "android_client_info": {
+          "package_name": "com.example.aedes_map_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "394866850552-kkv6jcta07ph98diun7hdda098bahgfq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDJS3KV6WaD3kahLmZcdrGrksh_lnU13k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "394866850552-kkv6jcta07ph98diun7hdda098bahgfq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

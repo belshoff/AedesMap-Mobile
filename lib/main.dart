@@ -1,21 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import './send_screen.dart';
 
 void main() {
-  // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-  //   .then((_) {
-  //     runApp(
-  //       new MaterialApp(
-  //         title: "Aedes Map",
-  //         theme: ThemeData(
-  //           // primarySwatch: Colors.amber[900],
-  //         ),
-  //         home: SendScreen(),
-  //       )
-  //     );
-  //   });
   runApp(
     new MaterialApp(
       title: "Aedes Map",

@@ -1,10 +1,14 @@
 import 'dart:io';
-
-import 'package:geolocator/geolocator.dart';
+import 'dart:async';
+import 'package:path/path.dart' as path;
+import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:simple_animations/simple_animations/controlled_animation.dart';
+import 'package:simple_animations/simple_animations/multi_track_tween.dart';
 
 class SendScreen extends StatefulWidget {
   @override
@@ -16,12 +20,59 @@ class _SendScreenState extends State<SendScreen> {
   File image;
   Position currentPosition;
   int _currentIndex = 0;
+  bool uploaded = false;
 
+  final tween = MultiTrackTween(
+    [
+      Track("size").add( Duration(seconds: 2), Tween(begin: 500.0, end: 0.0) ),
+      Track("rotation").add( Duration(seconds: 2), ConstantTween(0.0) )
+    ],
+  );
+
+  /// Pegar Geolocalização do dispositivo.
   _getPosition() async {
     print("GET LOCATION");
     var location = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     setState(() {
       currentPosition = location;
+    });
+  }
+
+  _resetData() {
+    print("_resetData");
+    setState(() {
+      uploaded = false;
+      image = null;
+    });
+  }
+
+  /// Enviar imagem para o Storage..
+  _sendImage() async {
+    String filename = path.basename(image.path);
+    final StorageReference store = FirebaseStorage.instance.ref().child(filename);
+    final StorageUploadTask task = store.putFile(image);
+    final StorageTaskSnapshot downloadUrl = (await task.onComplete);
+    final String url = (await downloadUrl.ref.getDownloadURL());
+    print("URL is $url");
+    setState(() {
+      uploaded = true;
+    });
+
+    Timer(Duration(seconds: 2), () => _resetData());
+  }
+
+  /// Receber uma imagem do dispositivo.
+  _getImage(ImageSource source) async {
+    _getPosition();
+    var photo = await ImagePicker.pickImage(source: source);
+    photo != null ? setState(() { image = photo; }) : setState(() { }) ;
+  }
+
+  _setIndex( int index ) {
+    List<ImageSource> sources = [ImageSource.camera, ImageSource.gallery];
+    _getImage(sources[index]);
+    setState(() {
+      _currentIndex = index;
     });
   }
 
@@ -32,7 +83,6 @@ class _SendScreenState extends State<SendScreen> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-
   }
 
   @override
@@ -46,25 +96,34 @@ class _SendScreenState extends State<SendScreen> {
     super.dispose();
   }
 
-  _getImage(ImageSource source) async {
-    _getPosition();
-    var photo = await ImagePicker.pickImage(source: source);
-    photo != null ? setState(() { image = photo; }) : setState(() { }) ;
-  }
-
-  void _setIndex ( int index ) {
-    List<ImageSource> sources = [ImageSource.camera, ImageSource.gallery];
-    _getImage(sources[index]);
-    setState(() {
-      _currentIndex = index;
-    });
+  Widget buildAnimation() {
+    return ControlledAnimation(
+      playback: Playback.MIRROR,
+      duration: tween.duration,
+      tween: tween,
+      builder: (context, animation) {
+        return Transform.rotate(
+          angle: animation["rotation"],
+          child: Column(
+            children: <Widget>[
+              Image.file(
+                image,
+                height: animation["size"],
+                width: animation["size"]
+              ),
+            ],
+          )
+        );
+      },
+    );
   }
 
   Widget getImage () {
     if ( image == null ) {
       return Text("No Image", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
+    } else if ( uploaded ) {
+      return buildAnimation();
     } else {
-      // return Image.file(image, height: 500);
       return Container(
         alignment: Alignment.topCenter,
         child: Column(
@@ -95,7 +154,7 @@ class _SendScreenState extends State<SendScreen> {
           Align(
             alignment: Alignment(1.0, 0.8),
             child: FloatingActionButton(
-              onPressed: () { print("Um dia vai enviar."); },
+              onPressed: () { _sendImage(); },
               child: Icon(Icons.send, color: Colors.teal),
               backgroundColor: Colors.white,
             ),
@@ -104,7 +163,7 @@ class _SendScreenState extends State<SendScreen> {
             alignment: Alignment(1.0, 1.0),
             child: FloatingActionButton(
               onPressed: () {
-                setState(() { image = null; });
+                _resetData();
               },
               child: Icon(Icons.cancel, color: Colors.red),
               backgroundColor: Colors.white,
