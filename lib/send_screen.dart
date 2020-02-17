@@ -61,11 +61,8 @@ class _SendScreenState extends State<SendScreen> {
     final StorageTaskSnapshot downloadUrl = (await task.onComplete);
     final String url = (await downloadUrl.ref.getDownloadURL());
 
-    postImage("$url");
-
-    setState(() { uploaded = true; });
-
-    Timer(Duration(seconds: 2), () => _resetData());
+    await postImage("$url").then(
+      (_) => _resetData());
   }
 
   Future<int> postImage(String url) async {
@@ -133,9 +130,47 @@ class _SendScreenState extends State<SendScreen> {
     );
   }
 
-  Widget getImage () {
+  // Botões de Ação da imagem.
+  Widget sendButton() {
+    return Align(
+      alignment: Alignment(1.0, 0.8),
+      child: FloatingActionButton(
+        onPressed: () { _sendImage(); },
+        child: uploading ? CircularProgressIndicator() : Icon(Icons.send, color: Colors.teal),
+        backgroundColor: Colors.white,
+      ),
+    );
+  }
+
+  Widget cancelButton() {
+    return Align(
+      alignment: Alignment(1.0, 1.0),
+      child: uploading ? null : FloatingActionButton(
+        onPressed: () {
+          _resetData();
+        },
+        child: Icon(Icons.cancel, color: Colors.red),
+        backgroundColor: Colors.white,
+      ),
+    );
+  }
+
+  Widget getImage( BuildContext context ) {
+    double height = MediaQuery.of(context).size.height;
     if ( image == null ) {
-      return Text("No Image", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
+      return Stack(
+        children: <Widget>[
+          Align(
+            alignment: Alignment.topCenter,
+            child: Text("Aedes Map", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Text("Selecione uma imagem usando:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+          )
+        ],
+      );
+      // return ;
     } else if ( uploaded ) {
       return buildAnimation();
     } else {
@@ -143,7 +178,7 @@ class _SendScreenState extends State<SendScreen> {
         alignment: Alignment.topCenter,
         child: Column(
           children: <Widget>[
-            Image.file(image, height: 500),
+            Image.file(image, height: height*0.75),
             currentPosition != null ? Text("$currentPosition", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),) : Text("Can't GET position.")
           ],
         )
@@ -161,29 +196,12 @@ class _SendScreenState extends State<SendScreen> {
       ),
       body: Container(
         padding: const EdgeInsets.all(8),
-        child: getImage(),
+        child: getImage(context),
         alignment: Alignment.topCenter,
       ),
       floatingActionButton: Stack(
         children: image != null && currentPosition != null ? <Widget>[
-          Align(
-            alignment: Alignment(1.0, 0.8),
-            child: FloatingActionButton(
-              onPressed: () { _sendImage(); },
-              child: uploading ? CircularProgressIndicator() : Icon(Icons.send, color: Colors.teal),
-              backgroundColor: Colors.white,
-            ),
-          ),
-          Align(
-            alignment: Alignment(1.0, 1.0),
-            child: FloatingActionButton(
-              onPressed: () {
-                _resetData();
-              },
-              child: Icon(Icons.cancel, color: Colors.red),
-              backgroundColor: Colors.white,
-            ),
-          ),
+          sendButton(), cancelButton(),
         ] : <Widget>[] ,
       ),
       bottomNavigationBar: BottomNavigationBar(
