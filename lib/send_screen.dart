@@ -1,6 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
+import 'package:aedes_map_flutter/resources/post.dart';
 import 'package:path/path.dart' as path;
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +25,7 @@ class _SendScreenState extends State<SendScreen> {
   Position currentPosition;
   int _currentIndex = 0;
   bool uploaded = false;
+  bool uploading = false;
 
   final tween = MultiTrackTween(
     [
@@ -31,34 +36,44 @@ class _SendScreenState extends State<SendScreen> {
 
   /// Pegar Geolocalização do dispositivo.
   _getPosition() async {
-    print("GET LOCATION");
     var location = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    setState(() {
-      currentPosition = location;
-    });
+    setState(() { currentPosition = location; });
   }
 
   _resetData() {
     print("_resetData");
     setState(() {
+      uploading = false;
       uploaded = false;
       image = null;
     });
   }
 
+
   /// Enviar imagem para o Storage..
   _sendImage() async {
+
+    setState(() { uploading = true; });
+    
     String filename = path.basename(image.path);
     final StorageReference store = FirebaseStorage.instance.ref().child(filename);
     final StorageUploadTask task = store.putFile(image);
     final StorageTaskSnapshot downloadUrl = (await task.onComplete);
     final String url = (await downloadUrl.ref.getDownloadURL());
-    print("URL is $url");
-    setState(() {
-      uploaded = true;
-    });
+
+    postImage("$url");
+
+    setState(() { uploaded = true; });
 
     Timer(Duration(seconds: 2), () => _resetData());
+  }
+
+  Future<int> postImage(String url) async {
+    var body = { "urlImage": url, "latitude": "${currentPosition.latitude}", "longitude": "${currentPosition.longitude}" };
+
+    var response = await http.post(Uri.encodeFull("http://192.168.0.12:5000/location"), headers: {"Accept": "application/json"}, body: body);
+ 
+    return response.statusCode;
   }
 
   /// Receber uma imagem do dispositivo.
@@ -155,7 +170,7 @@ class _SendScreenState extends State<SendScreen> {
             alignment: Alignment(1.0, 0.8),
             child: FloatingActionButton(
               onPressed: () { _sendImage(); },
-              child: Icon(Icons.send, color: Colors.teal),
+              child: uploading ? CircularProgressIndicator() : Icon(Icons.send, color: Colors.teal),
               backgroundColor: Colors.white,
             ),
           ),
