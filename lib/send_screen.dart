@@ -62,6 +62,7 @@ class _SendScreenState extends State<SendScreen> {
     final StorageUploadTask task = store.putFile(image);
     final StorageTaskSnapshot downloadUrl = (await task.onComplete);
     final String url = (await downloadUrl.ref.getDownloadURL());
+    print("Enviado $url");
 
     await postImage("$url").then((_) => _resetData());
   }
@@ -74,7 +75,7 @@ class _SendScreenState extends State<SendScreen> {
     };
 
     var response = await http.post(
-        Uri.encodeFull("http://192.168.0.12:5000/location"),
+        Uri.encodeFull("https://aedesmapapi.herokuapp.com/location"),
         headers: {"Accept": "application/json"},
         body: body);
 
@@ -180,6 +181,11 @@ class _SendScreenState extends State<SendScreen> {
           children: <Widget>[
             Spacer(),
             InkWell(
+              child: Image.asset('assets/launcher/logo.png', height: height * 0.30)
+              // Image(image: AssetImage('../assets/launcher/logo.png', height: height * 0.75)),
+            ),
+            Spacer(),
+            InkWell(
               onTap: () { _getImage(ImageSource.camera); },
               child: DottedBorder(
                 color: mainColor,
@@ -187,7 +193,7 @@ class _SendScreenState extends State<SendScreen> {
                 padding: EdgeInsets.all(4),
                 dashPattern: [9, 5],
                 child: Container(
-                  margin: EdgeInsets.only(top: 40.0, bottom: 40.0),
+                  margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                   // margin: EdgeInsets.all(20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -196,7 +202,7 @@ class _SendScreenState extends State<SendScreen> {
                         margin: const EdgeInsets.only( right: 25.0 ),
                         child: Icon(
                           Icons.camera_alt,
-                          size: 50,
+                          size: 25,
                           color: mainColor
                         ),
                       ),
@@ -204,7 +210,7 @@ class _SendScreenState extends State<SendScreen> {
                         child: Text("Câmera",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 75,
+                            fontSize: 30,
                             color: mainColor
                           )
                         ),
@@ -224,7 +230,7 @@ class _SendScreenState extends State<SendScreen> {
                 dashPattern: [9, 5],
                 child: Container(
                   // margin: EdgeInsets.all(20),
-                  margin: EdgeInsets.only(top: 40.0, bottom: 40.0),
+                  margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -232,7 +238,7 @@ class _SendScreenState extends State<SendScreen> {
                         margin: const EdgeInsets.only(right: 25.0),
                         child: Icon(
                           Icons.image,
-                          size: 50,
+                          size: 25,
                           color: mainColor
                         ),
                       ),
@@ -240,7 +246,7 @@ class _SendScreenState extends State<SendScreen> {
                         child: Text("Galeria",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 75,
+                            fontSize: 30,
                             color: mainColor
                           )
                         ),

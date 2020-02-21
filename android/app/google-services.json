@@ -1,34 +1,34 @@
 {
   "project_info": {
-    "project_number": "394866850552",
-    "firebase_url": "https://aedesmap-51573.firebaseio.com",
-    "project_id": "aedesmap-51573",
-    "storage_bucket": "aedesmap-51573.appspot.com"
+    "project_number": "806932317028",
+    "firebase_url": "https://aedesmap-database.firebaseio.com",
+    "project_id": "aedesmap-database",
+    "storage_bucket": "aedesmap-database.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:394866850552:android:04926f2c34395b343c990d",
+        "mobilesdk_app_id": "1:806932317028:android:58f6f5f7b9692587f7f071",
         "android_client_info": {
           "package_name": "com.example.aedes_map_flutter"
         }
       },
       "oauth_client": [
         {
-          "client_id": "394866850552-kkv6jcta07ph98diun7hdda098bahgfq.apps.googleusercontent.com",
+          "client_id": "806932317028-mo0cnrudrpmqamfv98bib5uuac947e9s.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBDJS3KV6WaD3kahLmZcdrGrksh_lnU13k"
+          "current_key": "AIzaSyA0i3GPrz1wbr_Vu5WLdqAhieKgRp6DhE8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "394866850552-kkv6jcta07ph98diun7hdda098bahgfq.apps.googleusercontent.com",
+              "client_id": "806932317028-mo0cnrudrpmqamfv98bib5uuac947e9s.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
